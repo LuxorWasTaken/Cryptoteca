@@ -84,6 +84,31 @@ Lo smart contract è scrito in solidity e lo si può modificare dal file: "crypt
 - endTime: Tempo di fine del periodo di noleggio.
 - isActive: Variabile che definisce se il noleggio è ancora attivo.
 
+### Variabili del contratto
+```
+    uint256 public bookCount = 0;
+    uint256 constant RENTAL_DURATION = 7 days;
+    mapping(uint256 => Book) public books;
+    mapping(address => mapping(uint256 => Rental)) public rentals;
+```
+
+- bookcount: Numero totale di libri presenti sulla blockchain.
+- RENTAL_DURATION: Tempo di durate del periodo di noleggio.
+- books: Corrispondenza tra interi e libri.
+- rentals: Associa a ciascun indirizzo un insieme numerato di oggetti Rental, dove l’indirizzo identifica il proprietario e il numero identifica ciascun Rental di quell’individuo.
+
+### Eventi
+```
+event BookAdded(uint256 bookId, string title, address uploader, uint256 price);
+event BookRented(uint256 bookId, address renter, uint256 endTime);
+event BookRemoved(uint256 bookId, address uploader);
+```
+
+Gli eventi esprimono rispettivamente: 
+
+- L'inserimento di un libro sulla blockchain.
+- Il noleggio di un libro sulla blockchain.
+- La rimozione di un libro dalla bo
 
 
 
