@@ -3,93 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cryptoteca | La Biblioteca Decentralizzata</title>
+    <title>Cryptoteca | Avalanche Edition</title>
     <!-- Ethers.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
-        :root { --primary: #E84142; --bg: #1e1e1e; --card: #2d2d2d; --text: #ffffff; } 
-        /* Colore Primary Rosso Avalanche */
-        
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        
-        nav { background: rgba(0,0,0,0.5); padding: 1rem 2rem; display: flex; justify-content: space-between; border-bottom: 2px solid var(--primary); }
-        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
-        
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn:hover { opacity: 0.9; }
-        .btn:disabled { background: #555; cursor: not-allowed; }
+        :root {
+            --primary: #E84142;
+            --primary-hover: #b32a2b;
+            --bg-dark: #000000;
+            --bg-card: #18181b;
+            --text-main: #ffffff;
+            --text-muted: #a1a1aa;
+            --border: #27272a;
+            --glass: rgba(24, 24, 27, 0.7);
+        }
 
-        .tabs { display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid #444; }
-        .tab { padding: 10px; cursor: pointer; color: #aaa; }
-        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        * { box-sizing: border-box; transition: all 0.2s ease; }
 
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(232, 65, 66, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(232, 65, 66, 0.1) 0%, transparent 40%);
+        }
 
-        .form-box { background: var(--card); padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; }
-        input { width: 100%; padding: 10px; margin: 10px 0 20px 0; background: #333; border: 1px solid #555; color: white; border-radius: 4px; box-sizing: border-box;}
+        /* --- NAVBAR --- */
+        nav {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--text-main);
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo span { color: var(--primary); }
+
+        .wallet-badge {
+            background: #27272a;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 15px rgba(232, 65, 66, 0.3);
+        }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .btn:disabled { background: #3f3f46; cursor: not-allowed; box-shadow: none; color: #71717a; }
         
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border-radius: 8px; overflow: hidden; border: 1px solid #444; position: relative;}
-        .card-head { height: 100px; background: linear-gradient(45deg, #E84142, #8e1c1c); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
-        .card-body { padding: 15px; }
-        .price { color: #4cd137; font-weight: bold; display: block; margin: 10px 0; }
-        .badge { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; background: #4cd137; color: black; }
-        .badge.removed { background: #ff4757; color: white; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
 
-        .loader { display: none; text-align: center; padding: 20px; color: var(--primary); }
+        /* --- LAYOUT PRINCIPALE --- */
+        .main-wrapper {
+            display: flex;
+            max-width: 1400px;
+            margin: 40px auto;
+            gap: 40px;
+            padding: 0 20px;
+        }
+
+        /* SIDEBAR NAVIGATION */
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item {
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-item:hover { background: #27272a; color: white; }
+        .nav-item.active { 
+            background: linear-gradient(90deg, rgba(232, 65, 66, 0.1) 0%, transparent 100%);
+            border-left: 3px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* CONTENT AREA */
+        .content { flex-grow: 1; }
+
+        .section { display: none; animation: slideIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes slideIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+
+        h2 { font-size: 2rem; margin-bottom: 5px; font-weight: 700; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 30px; margin-top: 0; }
+
+        /* --- GRID & CARDS --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card-img-placeholder {
+            height: 160px;
+            background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: rgba(255,255,255,0.05);
+            position: relative;
+        }
+        
+        .status-tag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .tag-active { background: #10b981; color: #064e3b; }
+        .tag-removed { background: #ef4444; color: #450a0a; }
+
+        .card-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        
+        .book-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 5px 0; color: white; }
+        .book-author { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
+        
+        .book-price { 
+            font-size: 1.1rem; 
+            color: var(--primary); 
+            font-weight: 700; 
+            margin-top: auto; 
+            padding-top: 15px; 
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-actions {
+            margin-top: 15px;
+            display: grid;
+            gap: 10px;
+        }
+
+        /* --- FORM UPLOAD --- */
+        .upload-container {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            max-width: 600px;
+        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; }
+        input {
+            width: 100%;
+            background: #09090b;
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        /* --- MODAL DETTAGLI --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #18181b;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--primary);
+            position: relative;
+        }
+        .close-modal {
+            position: absolute; top: 15px; right: 20px;
+            background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;
+        }
+        .modal-details p { border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .modal-details span { color: var(--text-muted); display: block; font-size: 0.8rem; margin-bottom: 4px;}
+        .modal-details strong { font-size: 1.1rem; }
+
+        .loader { margin: 20px auto; width: 40px; height: 40px; border: 3px solid #333; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s infinite linear; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
+    <!-- NAVBAR -->
     <nav>
-        <div class="logo">🔺 DeLibrary (Core)</div>
-        <button id="connectBtn" class="btn" onclick="connectWallet()">Connetti Core Wallet</button>
-        <span id="walletAddress" style="display:none; color: #aaa; font-family: monospace;"></span>
+        <div class="logo">🔺 Cryptoteca</div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div id="walletAddress" class="wallet-badge"></div>
+            <button id="connectBtn" class="btn" onclick="connectWallet()">Connetti Core Wallet</button>
+        </div>
     </nav>
 
-    <div class="container">
-        <div class="tabs">
-            <div class="tab active" onclick="switchTab('catalog')">Catalogo</div>
-            <div class="tab" onclick="switchTab('upload')">Carica Libro</div>
-            <div class="tab" onclick="switchTab('myRentals')">I Miei Noleggi</div>
-        </div>
-
-        <!-- CATALOGO -->
-        <div id="catalog" class="section active">
-            <h2>Libri su Avalanche</h2>
-            <div id="loaderCatalog" class="loader">Caricamento blockchain...</div>
-            <div id="catalogGrid" class="grid"></div>
-        </div>
-
-        <!-- UPLOAD -->
-        <div id="upload" class="section">
-            <div class="form-box">
-                <h3>Nuovo Libro</h3>
-                <label>Titolo</label> <input type="text" id="upTitle">
-                <label>Autore</label> <input type="text" id="upAuthor">
-                <label>IPFS Hash (CID)</label> <input type="text" id="upHash" placeholder="Es. QmX...">
-                <label>Prezzo (AVAX)</label> <input type="number" id="upPrice" step="0.01" placeholder="0.1">
-                <button class="btn" onclick="addBook()">Pubblica (Paga Gas in AVAX)</button>
-                <div id="loaderUpload" class="loader">Transazione in corso...</div>
+    <div class="main-wrapper">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="nav-item active" onclick="switchTab('catalog', this)">
+                🌐 Catalogo Pubblico
+            </div>
+            <div class="nav-item" onclick="switchTab('myRentals', this)">
+                📚 I Miei Noleggi
+            </div>
+            <div class="nav-item" onclick="switchTab('myUploads', this)">
+                📤 I Miei Libri (Upload)
+            </div>
+            <div class="nav-item" onclick="switchTab('upload', this)">
+                ➕ Carica Nuovo
             </div>
         </div>
 
-        <!-- I MIEI NOLEGGI -->
-        <div id="myRentals" class="section">
-            <h2>Libreria Personale</h2>
-            <div id="loaderRentals" class="loader">Controllo accessi...</div>
-            <div id="rentalsGrid" class="grid"></div>
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- SEZIONE CATALOGO -->
+            <div id="catalog" class="section active">
+                <h2>Catalogo Globale</h2>
+                <p class="subtitle">Esplora e noleggia libri dalla blockchain Avalanche.</p>
+                <div id="loaderCatalog" class="loader" style="display:none"></div>
+                <div id="catalogGrid" class="grid"></div>
+            </div>
+
+            <!-- SEZIONE I MIEI NOLEGGI -->
+            <div id="myRentals" class="section">
+                <h2>Libreria Personale</h2>
+                <p class="subtitle">I libri che hai attualmente in prestito.</p>
+                <div id="loaderRentals" class="loader" style="display:none"></div>
+                <div id="rentalsGrid" class="grid"></div>
+            </div>
+
+            <!-- SEZIONE I MIEI UPLOAD -->
+            <div id="myUploads" class="section">
+                <h2>Gestione Pubblicazioni</h2>
+                <p class="subtitle">I libri che hai caricato e messo a disposizione della community.</p>
+                <div id="loaderMyUploads" class="loader" style="display:none"></div>
+                <div id="myUploadsGrid" class="grid"></div>
+            </div>
+
+            <!-- SEZIONE UPLOAD -->
+            <div id="upload" class="section">
+                <h2>Pubblica un Libro</h2>
+                <p class="subtitle">Compila i dati per registrare un nuovo libro nello Smart Contract.</p>
+                
+                <div class="upload-container">
+                    <div class="form-group">
+                        <label>Titolo del Libro</label>
+                        <input type="text" id="upTitle" placeholder="Inserisci il titolo">
+                    </div>
+                    <div class="form-group">
+                        <label>Autore</label>
+                        <input type="text" id="upAuthor" placeholder="Nome dell'autore">
+                    </div>
+                    <div class="form-group">
+                        <label>IPFS Hash (CID)</label>
+                        <input type="text" id="upHash" placeholder="Es. QmXoypIzjW3f...">
+                        <small style="color:#555; display:block; margin-top:5px">Carica prima il file su Pinata e incolla qui il CID.</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Prezzo di Noleggio (AVAX)</label>
+                        <input type="number" id="upPrice" step="0.01" placeholder="Es. 0.1">
+                    </div>
+                    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="addBook()">Conferma e Paga Gas</button>
+                    <div id="loaderUpload" class="loader" style="display:none"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL DETTAGLI -->
+    <div id="detailModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content">
+            <button class="close-modal" onclick="document.getElementById('detailModal').style.display='none'">&times;</button>
+            <h2 id="mTitle" style="color:var(--primary); margin-top:0;">Titolo</h2>
+            <div class="modal-details">
+                <p><span>Autore</span> <strong id="mAuthor">Autore</strong></p>
+                <p><span>ID Libro</span> <strong id="mId">#0</strong></p>
+                <p><span>Prezzo Noleggio</span> <strong id="mPrice">0 AVAX</strong></p>
+                <p><span>Uploader</span> <strong id="mUploader" style="font-family:monospace; font-size:0.9rem">0x...</strong></p>
+                <p><span>Stato</span> <strong id="mStatus">Attivo</strong></p>
+                <p><span>Hash IPFS</span> <strong id="mHash" style="word-break: break-all; font-size:0.8rem">Qm...</strong></p>
+            </div>
+            <div style="margin-top: 20px; display:flex; gap:10px; justify-content: flex-end;">
+                 <button class="btn btn-outline" onclick="document.getElementById('detailModal').style.display='none'">Chiudi</button>
+            </div>
         </div>
     </div>
 
     <script>
         // --- CONFIGURAZIONE ---
-        // INCOLLA QUI L'INDIRIZZO DEL TUO CONTRATTO DEPLOYATO SU AVALANCHE FUJI
         const contractAddress = "0xAa293FdA6F36Cb1d29A0ceFF9f16dFA0e397B1A5";
 
         const contractABI = [
@@ -103,9 +380,22 @@
 
         let provider, signer, contract, userAddress;
 
-        // --- CORE WALLET LOGIC ---
+        // --- GESTIONE TAB UI ---
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            if(element) element.classList.add('active');
+
+            // Data Fetching in base alla tab
+            if(tabId === 'catalog') refreshCatalog();
+            if(tabId === 'myRentals') refreshRentals();
+            if(tabId === 'myUploads') refreshUploads();
+        }
+
+        // --- CONNESSIONE WALLET ---
         async function connectWallet() {
-            // Cerchiamo l'oggetto iniettato da Core
             let providerSource = window.avalanche || window.ethereum;
 
             if (!providerSource) {
@@ -114,11 +404,9 @@
             }
 
             try {
-                // Ethers v6
                 provider = new ethers.BrowserProvider(providerSource);
                 signer = await provider.getSigner();
 
-                // Check Rete: Avalanche Fuji è 43113 (0xa869)
                 const network = await provider.getNetwork();
                 if (network.chainId !== 43113n) {
                     try {
@@ -126,24 +414,26 @@
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: '0xA869' }],
                         });
-                        // Ricarica il signer dopo il cambio
                         provider = new ethers.BrowserProvider(providerSource);
                         signer = await provider.getSigner();
                     } catch (e) {
-                        alert("Passa alla rete Avalanche Fuji nelle impostazioni di Core!");
+                        alert("Passa alla rete Avalanche Fuji!");
                         return;
                     }
                 }
 
                 userAddress = await signer.getAddress();
                 
-                // UI Update
+                // Aggiorna UI Header
                 document.getElementById('connectBtn').style.display = 'none';
-                document.getElementById('walletAddress').innerText = "Connesso: " + userAddress.substring(0,6) + "...";
-                document.getElementById('walletAddress').style.display = 'inline';
+                const badge = document.getElementById('walletAddress');
+                badge.innerText = `Connected: ${userAddress.substring(0,6)}...${userAddress.substring(38)}`;
+                badge.style.display = 'block';
 
                 contract = new ethers.Contract(contractAddress, contractABI, signer);
-                loadCatalog();
+                
+                // Carica la prima tab
+                refreshCatalog();
 
             } catch (err) {
                 console.error(err);
@@ -151,17 +441,10 @@
             }
         }
 
-        // --- LOGICA APP ---
-        function switchTab(id) {
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelector(`.tab[onclick="switchTab('${id}')"]`).classList.add('active');
-            if(id === 'catalog') loadCatalog();
-            if(id === 'myRentals') loadMyRentals();
-        }
+        // --- FETCHERS DATI SEPARATI PER SEZIONE ---
 
-        async function loadCatalog() {
+        // 1. CATALOGO (Solo libri NON miei e NON noleggiati)
+        async function refreshCatalog() {
             if(!contract) return;
             const grid = document.getElementById('catalogGrid');
             grid.innerHTML = '';
@@ -169,60 +452,191 @@
 
             try {
                 const count = await contract.bookCount();
+                let found = false;
+
                 for(let i = 1; i <= count; i++) {
                     const b = await contract.books(i);
-                    if(b.exists) {
-                        const priceAvax = ethers.formatEther(b.rentalPrice);
+                    if(b.exists && b.isActive) {
+                        // Verifica proprietario
                         const isOwner = b.uploader.toLowerCase() === userAddress.toLowerCase();
-                        
-                        let btnHtml = '';
-                        if(isOwner) {
-                            btnHtml = b.isActive 
-                                ? `<button class="btn" style="background:#ff4757; width:100%" onclick="removeBook(${b.id})">Rimuovi</button>`
-                                : `<button class="btn" disabled style="width:100%">Rimosso</button>`;
-                        } else {
-                            btnHtml = b.isActive 
-                                ? `<button class="btn" style="width:100%" onclick="rentBook(${b.id}, '${priceAvax}')">Noleggia</button>`
-                                : `<button class="btn" disabled style="width:100%">Non Disponibile</button>`;
-                        }
+                        // Verifica accesso (noleggio)
+                        const access = await contract.hasAccess(userAddress, i);
+                        const hasActiveRental = access[0];
 
-                        grid.innerHTML += `
-                            <div class="card">
-                                <span class="badge ${!b.isActive ? 'removed' : ''}">${b.isActive ? 'ATTIVO' : 'RIMOSSO'}</span>
-                                <div class="card-head">📖</div>
-                                <div class="card-body">
-                                    <h3>${b.title}</h3>
-                                    <p>${b.author}</p>
-                                    <span class="price">${priceAvax} AVAX</span>
-                                    ${btnHtml}
-                                </div>
-                            </div>
-                        `;
+                        // LOGICA FILTRO: Mostra solo se NON sono proprietario e NON ho noleggio attivo
+                        if (!isOwner && !hasActiveRental) {
+                            found = true;
+                            const priceAvax = ethers.formatEther(b.rentalPrice);
+                            
+                            // Crea Card
+                            const card = createCardHTML(b, priceAvax, 'rent');
+                            grid.innerHTML += card;
+                        }
                     }
                 }
+                if(!found) grid.innerHTML = '<p style="color:#555">Nessun libro disponibile nel catalogo.</p>';
             } catch(e) { console.error(e); }
             document.getElementById('loaderCatalog').style.display = 'none';
         }
 
+        // 2. I MIEI NOLEGGI (Solo libri che posso leggere ma non sono miei)
+        async function refreshRentals() {
+            if(!contract) return;
+            const grid = document.getElementById('rentalsGrid');
+            grid.innerHTML = '';
+            document.getElementById('loaderRentals').style.display = 'block';
+
+            try {
+                const count = await contract.bookCount();
+                let found = false;
+
+                for(let i = 1; i <= count; i++) {
+                    const access = await contract.hasAccess(userAddress, i);
+                    // access[0] = true se ho accesso
+                    
+                    if(access[0]) {
+                        const b = await contract.books(i);
+                        const isOwner = b.uploader.toLowerCase() === userAddress.toLowerCase();
+
+                        // LOGICA FILTRO: Mostra solo se ho accesso E NON sono il proprietario
+                        if (!isOwner) {
+                            found = true;
+                            // Crea Card con azione "Read"
+                            const card = createCardHTML(b, ethers.formatEther(b.rentalPrice), 'read');
+                            grid.innerHTML += card;
+                        }
+                    }
+                }
+                if(!found) grid.innerHTML = '<p style="color:#555">Nessun noleggio attivo.</p>';
+            } catch(e) { console.error(e); }
+            document.getElementById('loaderRentals').style.display = 'none';
+        }
+
+        // 3. I MIEI UPLOAD (Solo libri caricati da me)
+        async function refreshUploads() {
+            if(!contract) return;
+            const grid = document.getElementById('myUploadsGrid');
+            grid.innerHTML = '';
+            document.getElementById('loaderMyUploads').style.display = 'block';
+
+            try {
+                const count = await contract.bookCount();
+                let found = false;
+
+                for(let i = 1; i <= count; i++) {
+                    const b = await contract.books(i);
+                    const isOwner = b.uploader.toLowerCase() === userAddress.toLowerCase();
+
+                    // LOGICA FILTRO: Mostra solo se sono il proprietario
+                    if(b.exists && isOwner) {
+                        found = true;
+                        // Crea Card con azione "Owner" (Read + Remove)
+                        const card = createCardHTML(b, ethers.formatEther(b.rentalPrice), 'owner');
+                        grid.innerHTML += card;
+                    }
+                }
+                if(!found) grid.innerHTML = '<p style="color:#555">Non hai ancora caricato libri.</p>';
+            } catch(e) { console.error(e); }
+            document.getElementById('loaderMyUploads').style.display = 'none';
+        }
+
+        // --- GENERAZIONE HTML CARD ---
+        function createCardHTML(book, price, type) {
+            const bookData = encodeURIComponent(JSON.stringify({
+                id: book.id.toString(),
+                title: book.title,
+                author: book.author,
+                price: price,
+                uploader: book.uploader,
+                isActive: book.isActive,
+                hash: book.ipfsHash
+            }));
+
+            let actionBtn = '';
+            let statusBadge = book.isActive 
+                ? '<span class="status-tag tag-active">Disponibile</span>' 
+                : '<span class="status-tag tag-removed">Rimosso</span>';
+
+            if(type === 'rent') {
+                actionBtn = `<button class="btn" style="width:100%" onclick="rentBook(${book.id}, '${price}')">Noleggia</button>`;
+            } else if (type === 'read') {
+                statusBadge = '<span class="status-tag tag-active" style="background:var(--primary); color:white">Noleggiato</span>';
+                actionBtn = `<button class="btn btn-outline" style="width:100%" onclick="window.open('https://dweb.link/ipfs/${book.ipfsHash}', '_blank')">📖 Leggi Ora</button>`;
+            } else if (type === 'owner') {
+                const removeBtn = book.isActive 
+                    ? `<button class="btn" style="background:#ef4444; flex:1" onclick="removeBook(${book.id})">Rimuovi</button>` 
+                    : `<button class="btn" disabled style="flex:1">Rimosso</button>`;
+                
+                const readBtn = `<button class="btn btn-outline" style="flex:1" onclick="window.open('https://dweb.link/ipfs/${book.ipfsHash}', '_blank')">Leggi</button>`;
+                
+                actionBtn = `<div style="display:flex; gap:10px">${readBtn}${removeBtn}</div>`;
+            }
+
+            return `
+            <div class="card" onclick="openModal('${bookData}', event)">
+                ${statusBadge}
+                <div class="card-img-placeholder">📕</div>
+                <div class="card-body">
+                    <h3 class="book-title">${book.title}</h3>
+                    <div class="book-author">${book.author}</div>
+                    <div class="book-price">
+                        <span>Prezzo:</span>
+                        <span>${price} AVAX</span>
+                    </div>
+                    <div class="card-actions" onclick="event.stopPropagation()">
+                        ${actionBtn}
+                    </div>
+                </div>
+            </div>
+            `;
+        }
+
+        // --- GESTIONE MODALE ---
+        function openModal(bookDataEncoded, event) {
+            // Evita che il modale si apra se clicco sui bottoni
+            if(event.target.tagName === 'BUTTON') return;
+
+            const data = JSON.parse(decodeURIComponent(bookDataEncoded));
+            
+            document.getElementById('mTitle').innerText = data.title;
+            document.getElementById('mAuthor').innerText = data.author;
+            document.getElementById('mId').innerText = "#" + data.id;
+            document.getElementById('mPrice').innerText = data.price + " AVAX";
+            document.getElementById('mUploader').innerText = data.uploader;
+            document.getElementById('mStatus').innerText = data.isActive ? "Attivo / Noleggiabile" : "Rimosso dal mercato";
+            document.getElementById('mStatus').style.color = data.isActive ? "#10b981" : "#ef4444";
+            document.getElementById('mHash').innerText = data.hash;
+
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal(event) {
+            if(event.target.id === 'detailModal') {
+                document.getElementById('detailModal').style.display = 'none';
+            }
+        }
+
+        // --- AZIONI BLOCKCHAIN  ---
         async function addBook() {
             const title = document.getElementById('upTitle').value;
             const author = document.getElementById('upAuthor').value;
             const hash = document.getElementById('upHash').value;
             const price = document.getElementById('upPrice').value;
 
-            if(!title || !hash || !price) return alert("Dati mancanti");
+            if(!title || !hash || !price) return alert("Compila tutti i campi");
 
             try {
                 document.getElementById('loaderUpload').style.display = 'block';
                 const tx = await contract.addBook(title, author, hash, ethers.parseEther(price));
-                await tx.wait(); // Aspettiamo conferma su Avalanche
+                await tx.wait();
                 alert("Libro pubblicato!");
-                document.getElementById('loaderUpload').style.display = 'none';
-                switchTab('catalog');
+                document.getElementById('upTitle').value = '';
+                document.getElementById('upHash').value = '';
+                switchTab('myUploads', document.querySelectorAll('.nav-item')[2]);
             } catch(e) { 
                 alert("Errore: " + e.message); 
-                document.getElementById('loaderUpload').style.display = 'none';
             }
+            document.getElementById('loaderUpload').style.display = 'none';
         }
 
         async function rentBook(id, price) {
@@ -232,50 +646,21 @@
                 alert("Transazione inviata. Attendi la conferma...");
                 await tx.wait();
                 alert("Libro noleggiato con successo!");
-                loadCatalog();
+                // Ricarica la vista attuale (o spostati sui noleggi)
+                refreshCatalog(); 
             } catch(e) { alert("Errore: " + e.message); }
         }
         
         async function removeBook(id) {
             try {
-                if(!confirm("Vuoi davvero rimuovere questo libro?")) return;
+                if(!confirm("Vuoi rimuovere questo libro dal mercato?")) return;
                 const tx = await contract.removeBook(id);
                 await tx.wait();
                 alert("Libro rimosso.");
-                loadCatalog();
+                refreshUploads();
             } catch(e) { alert("Errore: " + e.message); }
         }
 
-        async function loadMyRentals() {
-            if(!contract) return;
-            const grid = document.getElementById('rentalsGrid');
-            grid.innerHTML = '';
-            document.getElementById('loaderRentals').style.display = 'block';
-
-            try {
-                const count = await contract.bookCount();
-                let found = false;
-                for(let i = 1; i <= count; i++) {
-                    const access = await contract.hasAccess(userAddress, i);
-                    if(access[0]) { // Se access[0] è true
-                        found = true;
-                        const b = await contract.books(i);
-                        grid.innerHTML += `
-                            <div class="card">
-                                <div class="card-head" style="background: #4cd137; color:black">👁</div>
-                                <div class="card-body">
-                                    <h3>${b.title}</h3>
-                                    <p>${b.author}</p>
-                                    <button class="btn" style="width:100%" onclick="window.open('https://dweb.link/ipfs/${access[1]}', '_blank')">LEGGI ORA</button>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-                if(!found) grid.innerHTML = "<p>Nessun libro noleggiato.</p>";
-            } catch(e) { console.error(e); }
-            document.getElementById('loaderRentals').style.display = 'none';
-        }
     </script>
 </body>
 </html>

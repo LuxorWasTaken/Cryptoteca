@@ -11,7 +11,7 @@ contract DeLibrary {
         uint256 rentalPrice;
         address payable uploader;
         bool exists;    // Serve per sapere se l'ID è stato mai creato
-        bool isActive;  // NUOVO: Serve per sapere se è attualmente noleggiabile
+        bool isActive;  // Serve per sapere se è attualmente noleggiabile
     }
 
     struct Rental {
@@ -21,7 +21,6 @@ contract DeLibrary {
         bool isActive;
     }
 
-    // Contatore incrementale univoco. Non torna mai indietro.
     uint256 public bookCount = 0;
     
     uint256 constant RENTAL_DURATION = 7 days;
@@ -41,7 +40,7 @@ contract DeLibrary {
         require(bytes(_ipfsHash).length > 0, "Hash IPFS obbligatorio");
         require(_price > 0, "Prezzo > 0");
 
-        bookCount++; // Incremento sempre, garantendo ID univoci
+        bookCount++;
         
         books[bookCount] = Book({
             id: bookCount,
@@ -110,7 +109,7 @@ contract DeLibrary {
             return (true, book.ipfsHash);
         }
 
-        // Nota: Se un utente ha noleggiato il libro IERI e l'autore lo rimuove OGGI,
+        // Se un utente ha noleggiato il libro IERI e l'autore lo rimuove OGGI,
         // l'utente ha ancora diritto di leggerlo fino alla scadenza del suo noleggio.
         // La rimozione impedisce solo NUOVI noleggi.
         if (rental.isActive && block.timestamp <= rental.endTime) {
