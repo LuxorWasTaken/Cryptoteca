@@ -270,12 +270,11 @@ Permette di leggere le informazioni di un libro specifico: titolo, prezzo di nol
 
 ### Problematiche nella gestione di IPFS durante lo sviluppo dello smart contract
 
-Durante lo sviluppo dello smart contract abbiamo incontrato diverse difficoltà legate all’utilizzo di IPFS per la memorizzazione dei file. Caricare un file su un singolo nodo IPFS, infatti, non garantiva né la decentralizzazione né la persistenza del contenuto: se quel nodo diventava irraggiungibile, l’hash salvato nello smart contract non era più utile.
+Durante lo sviluppo del sistema abbiamo riscontrato diverse difficoltà legate al funzionamento dell'IPFS per la memorizzazione dei file. Inizialmente abbiamo creato un nodo personale IPFS per lo storage dei documenti. Tuttavia, all'interno del codice abbiamo inserito il collegamento al gateway del nostro IPFS privato. Una scelta del genere faceva perdere completamente di senso all'utilizzo di un file system decentralizzato. Infatti utilizzare il gateway del nostro IPFS personale non avrebbe permesso alla piattaforma di accedere a documenti presenti su altri IPFS forniti da altri enti.
 
-Un’altra criticità era che, utilizzando un singolo nodo, ogni volta che il file veniva caricato su un nodo IPFS diverso o cambiava gateway, eravamo costretti a modificare il codice per aggiornare l’indirizzo del nodo stesso. Questo approccio era poco scalabile, fragile e contrario ai principi della decentralizzazione.
+Per risolvere questo problema avevamo bisogno di permette alla nostra piattaforma web di interfacciarsi con un gateway pubblico offerto da qualche ente. I più famosi sono per esempio quello di cloudflare, pinata e dweb, tuttavia l'utilizzo di ognuno di questi riportava problematiche di ogni tipo. da semplici pagine non raggiungibili a pagine bloccate dalla polizia postale per contenuti poco legali.
 
-Per risolvere queste problematiche abbiamo adottato una soluzione basata su un nodo centrale che replica e contiene i contenuti provenienti da tutti gli altri nodi IPFS, garantendo così che i file fossero sempre disponibili e non dipendessero da un unico gateway. In questo modo non è più necessario cambiare l’indirizzo IPFS nel codice e si ottiene una gestione molto più affidabile e decentralizzata.
-
+Dopo l'ennesimo tentativo fallito decidiamo di affidarci all'ultima speranza. Il gateway pubblico ufficiale degli sviluppatori di IPFS. E sorprendentemente questo gateway ha funzionato. Infatti grazie a ciò siamo riusciti a creare un sistema dove non importa quale strumento o mezzo si utilizza per salvare un documento all'interno di un IPFS, grazie al gateway pubblico, ovunque esso sia sarà sempre reperibile all'interno della blockchian (ovviamente sempre se il suo cid è salvato nei suoi registri)
 
 
 
