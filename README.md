@@ -235,7 +235,7 @@ Restituisce:
 - True se l'utente con indirizzo _user ha accesso al libro identificato dal CID.
 - False altrimenti.
 
->[!Nota]
+> Nota
 > Quando un utente noleggia un libro, ha accesso a questo fino alla fine del tempo di durata del noleggio. Anche se l'autore decide di rimuovere il libro dalla chain.
 
 #### getBookDetails
