@@ -3,9 +3,9 @@ Progetto del team 6 per l'Hackathon di Avalanche
 
 # Sommario
 - [Introduzione](#Cryptoteca-Introduzione)
-- [Installazione](#installazione)
+- [Requisiti](#Requisiti)
 - [Uso](#uso)
-- [Conclusione](#conclusione)
+- [Spiegazione Smart Contract](#Funzionamento dello Smart Contract)
 
 ## Cryptoteca-Introduzione
 
@@ -18,7 +18,7 @@ L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento 
 - ISPF (Solo per mettere a disposizione i libri)
 
 
-## Funzionamento
+## Uso
 
 L'utente che vuole fare utilizzo di cryptoteca deve connettersi ad un eventuale sito su dominio pubblico e quindi connettere il proprio core wallet.
 Dopo la connessione, diventerano visibili tutti i libri disponibili nel catalogo della blockchain. 
@@ -31,7 +31,7 @@ Le possibili operazioni sono:
 - Noleggio di un libro.
 - Mettere a disposizione un libro.
 
-## Noleggio di un libro
+### Noleggio di un libro
 
 Il noleggio di un libro avviene nelle seguenti fasi: 
 
@@ -39,7 +39,7 @@ Il noleggio di un libro avviene nelle seguenti fasi:
 2) Per il noleggio deve essere pagata una somma di avax alla persona che ha inserito il libro.
 3) Nella sezione "I miei noleggi" si potrà leggere il libro scelto.
 
-## Mettere a disposizione un libro
+### Mettere a disposizione un libro
 
 La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un [ISPF](https://en.wikipedia.org/wiki/ISPF) e avviene nel seguente modo: 
 
