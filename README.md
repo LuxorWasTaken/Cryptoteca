@@ -68,7 +68,7 @@ Lo smart contract è scrito in solidity e lo si può modificare dal file: "crypt
 - exists: Variabile per vedere se un libro esiste.
 - isActive: Variabile per vedere se il libro è ancora noleggiabile (Ossia non è scaduto il tempo di noleggio).
 
-#### Creazione della struttura per il noleggio 
+### Creazione della struttura per il noleggio 
 
 ```
     struct Rental {
