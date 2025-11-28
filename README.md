@@ -47,7 +47,6 @@ Lo smart contract è scrito in solidity e lo si può modificare dal file: "crypt
 
 ### Creazione del struttura del libro
 
-
 ```
     struct Book {
         uint256 id;
@@ -60,6 +59,33 @@ Lo smart contract è scrito in solidity e lo si può modificare dal file: "crypt
         bool isActive;  
     }
 ```
+
+- id: Codice identificativo del libro.
+- title: Titolo del libro.
+- author: Autore del libro.
+- ipfsHash: CID del libro fornito dal ISPF.
+- Uploader: Indirizzo dell'utente che ha fatto l'upload del libro.
+- exists: Variabile per vedere se un libro esiste.
+- isActive: Variabile per vedere se il libro è ancora noleggiabile (Ossia non è scaduto il tempo di noleggio).
+
+#### Creazione della struttura per il noleggio 
+
+```
+    struct Rental {
+        uint256 bookId;
+        uint256 startTime;
+        uint256 endTime;
+        bool isActive;
+    }
+```
+
+- bookId: Codice identificativo del libro che è stato noleggiato.
+- startTime: Tempo di inizio del periodo di noleggio.
+- endTime: Tempo di fine del periodo di noleggio.
+- isActive: Variabile che definisce se il noleggio è ancora attivo.
+
+
+
 
 
 
