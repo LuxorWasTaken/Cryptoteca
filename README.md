@@ -6,6 +6,7 @@ Progetto del team 6 per l'Hackathon di Avalanche
 - [Requisiti](#Requisiti)
 - [Uso](#uso)
 - [Spiegazione Smart Contract](#SmartContract-Spiegazione)
+- [Problematiche Riscontrate nello Sviluppo](#Problematiche)
 
 ## Cryptoteca-Introduzione
 
@@ -15,7 +16,7 @@ L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento 
 ## Requisiti
 
 - Core Wallet
-- ISPF (Solo per mettere a disposizione i libri)
+- IPFS (Solo per mettere a disposizione i libri)
 
 
 ## Uso
@@ -41,10 +42,10 @@ Il noleggio di un libro avviene nelle seguenti fasi:
 
 ### Mettere a disposizione un libro
 
-La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un [ISPF](https://en.wikipedia.org/wiki/ISPF) e avviene nel seguente modo: 
+La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un [IPFS](https://en.wikipedia.org/wiki/InterPlanetary_File_System) e avviene nel seguente modo: 
 
 1) Cliccare sulla sezione "Carica Nuovo".
-2) Inserimento delle informazioni (In particolare il CID, ossia il codice che permette di identificare un file presente in tutte le ISPF).
+2) Inserimento delle informazioni (In particolare il CID, ossia il codice che permette di identificare un file presente in tutte le ISPF. Il CID lo si ottiene inserendo il file da mettere nella blockchain all'interno del proprio nodo IPFS). 
 3) Cliccare "Conferma e paga il gas".
 
 ## SmartContract-Spiegazione
@@ -69,7 +70,7 @@ Lo smart contract è scrito in solidity e lo si può modificare dal file: "crypt
 - id: Codice identificativo del libro.
 - title: Titolo del libro.
 - author: Autore del libro.
-- ipfsHash: CID del libro fornito dal ISPF.
+- ipfsHash: CID del libro fornito dal IPFS.
 - Uploader: Indirizzo dell'utente che ha fatto l'upload del libro.
 - exists: Variabile per vedere se un libro esiste.
 - isActive: Variabile per vedere se il libro è ancora noleggiabile (Ossia non è scaduto il tempo di noleggio).
@@ -264,6 +265,16 @@ Ritorna:
 - La disponibilità.
 
 Permette di leggere le informazioni di un libro specifico: titolo, prezzo di noleggio, indirizzo dell’autore e stato di attivazione
+
+## Problematiche
+
+### Problematiche nella gestione di IPFS durante lo sviluppo dello smart contract
+
+Durante lo sviluppo dello smart contract abbiamo incontrato diverse difficoltà legate all’utilizzo di IPFS per la memorizzazione dei file. Caricare un file su un singolo nodo IPFS, infatti, non garantiva né la decentralizzazione né la persistenza del contenuto: se quel nodo diventava irraggiungibile, l’hash salvato nello smart contract non era più utile.
+
+Un’altra criticità era che, utilizzando un singolo nodo, ogni volta che il file veniva caricato su un nodo IPFS diverso o cambiava gateway, eravamo costretti a modificare il codice per aggiornare l’indirizzo del nodo stesso. Questo approccio era poco scalabile, fragile e contrario ai principi della decentralizzazione.
+
+Per risolvere queste problematiche abbiamo adottato una soluzione basata su un nodo centrale che replica e contiene i contenuti provenienti da tutti gli altri nodi IPFS, garantendo così che i file fossero sempre disponibili e non dipendessero da un unico gateway. In questo modo non è più necessario cambiare l’indirizzo IPFS nel codice e si ottiene una gestione molto più affidabile e decentralizzata.
 
 
 
