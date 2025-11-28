@@ -5,7 +5,7 @@ Progetto del team 6 per l'Hackathon di Avalanche
 - [Introduzione](#Cryptoteca-Introduzione)
 - [Requisiti](#Requisiti)
 - [Uso](#uso)
-- [Spiegazione Smart Contract](#Funzionamento dello Smart Contract)
+- [Spiegazione Smart Contract](#SmartContract-Spiegazione)
 
 ## Cryptoteca-Introduzione
 
@@ -47,7 +47,7 @@ La messa a disposizione di un libro è leggermente più complessa perchè si ha 
 2) Inserimento delle informazioni (In particolare il CID, ossia il codice che permette di identificare un file presente in tutte le ISPF).
 3) Cliccare "Conferma e paga il gas".
 
-## Funzionamento dello Smart Contract
+## SmartContract-Spiegazione
 
 Lo smart contract è scrito in solidity e lo si può modificare dal file: "cryptoteca.sol". Di seguito la spiegazione: 
 
