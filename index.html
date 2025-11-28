@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptoteca | La Biblioteca Decentralizzata</title>
+    <!-- Ethers.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+
+    <style>
+        :root { --primary: #E84142; --bg: #1e1e1e; --card: #2d2d2d; --text: #ffffff; } 
+        /* Colore Primary Rosso Avalanche */
+        
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        
+        nav { background: rgba(0,0,0,0.5); padding: 1rem 2rem; display: flex; justify-content: space-between; border-bottom: 2px solid var(--primary); }
+        .logo { font-weight: bold; font-size: 1.5rem; color: var(--primary); }
+        
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background: #555; cursor: not-allowed; }
+
+        .tabs { display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid #444; }
+        .tab { padding: 10px; cursor: pointer; color: #aaa; }
+        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+
+        .form-box { background: var(--card); padding: 30px; border-radius: 12px; max-width: 500px; margin: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0 20px 0; background: #333; border: 1px solid #555; color: white; border-radius: 4px; box-sizing: border-box;}
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 8px; overflow: hidden; border: 1px solid #444; position: relative;}
+        .card-head { height: 100px; background: linear-gradient(45deg, #E84142, #8e1c1c); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .card-body { padding: 15px; }
+        .price { color: #4cd137; font-weight: bold; display: block; margin: 10px 0; }
+        .badge { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; background: #4cd137; color: black; }
+        .badge.removed { background: #ff4757; color: white; }
+
+        .loader { display: none; text-align: center; padding: 20px; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">🔺 DeLibrary (Core)</div>
+        <button id="connectBtn" class="btn" onclick="connectWallet()">Connetti Core Wallet</button>
+        <span id="walletAddress" style="display:none; color: #aaa; font-family: monospace;"></span>
+    </nav>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('catalog')">Catalogo</div>
+            <div class="tab" onclick="switchTab('upload')">Carica Libro</div>
+            <div class="tab" onclick="switchTab('myRentals')">I Miei Noleggi</div>
+        </div>
+
+        <!-- CATALOGO -->
+        <div id="catalog" class="section active">
+            <h2>Libri su Avalanche</h2>
+            <div id="loaderCatalog" class="loader">Caricamento blockchain...</div>
+            <div id="catalogGrid" class="grid"></div>
+        </div>
+
+        <!-- UPLOAD -->
+        <div id="upload" class="section">
+            <div class="form-box">
+                <h3>Nuovo Libro</h3>
+                <label>Titolo</label> <input type="text" id="upTitle">
+                <label>Autore</label> <input type="text" id="upAuthor">
+                <label>IPFS Hash (CID)</label> <input type="text" id="upHash" placeholder="Es. QmX...">
+                <label>Prezzo (AVAX)</label> <input type="number" id="upPrice" step="0.01" placeholder="0.1">
+                <button class="btn" onclick="addBook()">Pubblica (Paga Gas in AVAX)</button>
+                <div id="loaderUpload" class="loader">Transazione in corso...</div>
+            </div>
+        </div>
+
+        <!-- I MIEI NOLEGGI -->
+        <div id="myRentals" class="section">
+            <h2>Libreria Personale</h2>
+            <div id="loaderRentals" class="loader">Controllo accessi...</div>
+            <div id="rentalsGrid" class="grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAZIONE ---
+        // INCOLLA QUI L'INDIRIZZO DEL TUO CONTRATTO DEPLOYATO SU AVALANCHE FUJI
+        const contractAddress = "0xAa293FdA6F36Cb1d29A0ceFF9f16dFA0e397B1A5";
+
+        const contractABI = [
+            "function bookCount() view returns (uint256)",
+            "function books(uint256) view returns (uint256 id, string title, string author, string ipfsHash, uint256 rentalPrice, address uploader, bool exists, bool isActive)",
+            "function addBook(string title, string author, string ipfsHash, uint256 price) public",
+            "function rentBook(uint256 bookId) public payable",
+            "function hasAccess(address user, uint256 bookId) public view returns (bool, string)",
+            "function removeBook(uint256 bookId) public"
+        ];
+
+        let provider, signer, contract, userAddress;
+
+        // --- CORE WALLET LOGIC ---
+        async function connectWallet() {
+            // Cerchiamo l'oggetto iniettato da Core
+            let providerSource = window.avalanche || window.ethereum;
+
+            if (!providerSource) {
+                alert("Core Wallet non trovato! Installalo da core.app");
+                return;
+            }
+
+            try {
+                // Ethers v6
+                provider = new ethers.BrowserProvider(providerSource);
+                signer = await provider.getSigner();
+
+                // Check Rete: Avalanche Fuji è 43113 (0xa869)
+                const network = await provider.getNetwork();
+                if (network.chainId !== 43113n) {
+                    try {
+                        await providerSource.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0xA869' }],
+                        });
+                        // Ricarica il signer dopo il cambio
+                        provider = new ethers.BrowserProvider(providerSource);
+                        signer = await provider.getSigner();
+                    } catch (e) {
+                        alert("Passa alla rete Avalanche Fuji nelle impostazioni di Core!");
+                        return;
+                    }
+                }
+
+                userAddress = await signer.getAddress();
+                
+                // UI Update
+                document.getElementById('connectBtn').style.display = 'none';
+                document.getElementById('walletAddress').innerText = "Connesso: " + userAddress.substring(0,6) + "...";
+                document.getElementById('walletAddress').style.display = 'inline';
+
+                contract = new ethers.Contract(contractAddress, contractABI, signer);
+                loadCatalog();
+
+            } catch (err) {
+                console.error(err);
+                alert("Errore connessione: " + err.message);
+            }
+        }
+
+        // --- LOGICA APP ---
+        function switchTab(id) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelector(`.tab[onclick="switchTab('${id}')"]`).classList.add('active');
+            if(id === 'catalog') loadCatalog();
+            if(id === 'myRentals') loadMyRentals();
+        }
+
+        async function loadCatalog() {
+            if(!contract) return;
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = '';
+            document.getElementById('loaderCatalog').style.display = 'block';
+
+            try {
+                const count = await contract.bookCount();
+                for(let i = 1; i <= count; i++) {
+                    const b = await contract.books(i);
+                    if(b.exists) {
+                        const priceAvax = ethers.formatEther(b.rentalPrice);
+                        const isOwner = b.uploader.toLowerCase() === userAddress.toLowerCase();
+                        
+                        let btnHtml = '';
+                        if(isOwner) {
+                            btnHtml = b.isActive 
+                                ? `<button class="btn" style="background:#ff4757; width:100%" onclick="removeBook(${b.id})">Rimuovi</button>`
+                                : `<button class="btn" disabled style="width:100%">Rimosso</button>`;
+                        } else {
+                            btnHtml = b.isActive 
+                                ? `<button class="btn" style="width:100%" onclick="rentBook(${b.id}, '${priceAvax}')">Noleggia</button>`
+                                : `<button class="btn" disabled style="width:100%">Non Disponibile</button>`;
+                        }
+
+                        grid.innerHTML += `
+                            <div class="card">
+                                <span class="badge ${!b.isActive ? 'removed' : ''}">${b.isActive ? 'ATTIVO' : 'RIMOSSO'}</span>
+                                <div class="card-head">📖</div>
+                                <div class="card-body">
+                                    <h3>${b.title}</h3>
+                                    <p>${b.author}</p>
+                                    <span class="price">${priceAvax} AVAX</span>
+                                    ${btnHtml}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            } catch(e) { console.error(e); }
+            document.getElementById('loaderCatalog').style.display = 'none';
+        }
+
+        async function addBook() {
+            const title = document.getElementById('upTitle').value;
+            const author = document.getElementById('upAuthor').value;
+            const hash = document.getElementById('upHash').value;
+            const price = document.getElementById('upPrice').value;
+
+            if(!title || !hash || !price) return alert("Dati mancanti");
+
+            try {
+                document.getElementById('loaderUpload').style.display = 'block';
+                const tx = await contract.addBook(title, author, hash, ethers.parseEther(price));
+                await tx.wait(); // Aspettiamo conferma su Avalanche
+                alert("Libro pubblicato!");
+                document.getElementById('loaderUpload').style.display = 'none';
+                switchTab('catalog');
+            } catch(e) { 
+                alert("Errore: " + e.message); 
+                document.getElementById('loaderUpload').style.display = 'none';
+            }
+        }
+
+        async function rentBook(id, price) {
+            try {
+                if(!confirm(`Confermi il noleggio per ${price} AVAX?`)) return;
+                const tx = await contract.rentBook(id, { value: ethers.parseEther(price) });
+                alert("Transazione inviata. Attendi la conferma...");
+                await tx.wait();
+                alert("Libro noleggiato con successo!");
+                loadCatalog();
+            } catch(e) { alert("Errore: " + e.message); }
+        }
+        
+        async function removeBook(id) {
+            try {
+                if(!confirm("Vuoi davvero rimuovere questo libro?")) return;
+                const tx = await contract.removeBook(id);
+                await tx.wait();
+                alert("Libro rimosso.");
+                loadCatalog();
+            } catch(e) { alert("Errore: " + e.message); }
+        }
+
+        async function loadMyRentals() {
+            if(!contract) return;
+            const grid = document.getElementById('rentalsGrid');
+            grid.innerHTML = '';
+            document.getElementById('loaderRentals').style.display = 'block';
+
+            try {
+                const count = await contract.bookCount();
+                let found = false;
+                for(let i = 1; i <= count; i++) {
+                    const access = await contract.hasAccess(userAddress, i);
+                    if(access[0]) { // Se access[0] è true
+                        found = true;
+                        const b = await contract.books(i);
+                        grid.innerHTML += `
+                            <div class="card">
+                                <div class="card-head" style="background: #4cd137; color:black">👁</div>
+                                <div class="card-body">
+                                    <h3>${b.title}</h3>
+                                    <p>${b.author}</p>
+                                    <button class="btn" style="width:100%" onclick="window.open('https://magenta-peculiar-wildcat-353.mypinata.cloud/${access[1]}', '_blank')">LEGGI ORA</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                if(!found) grid.innerHTML = "<p>Nessun libro noleggiato.</p>";
+            } catch(e) { console.error(e); }
+            document.getElementById('loaderRentals').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
