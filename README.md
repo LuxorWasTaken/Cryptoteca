@@ -3,7 +3,7 @@ Progetto del team 6 per l'Hackathon di Avalanche
 
 ## Cryptoteca
 
-L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento e noleggio di libri digiitali tramite l'uso della tecncologia blockchain e ispf con minimi costi di noleggio dovuti soltanto alla necessità di costo computazionale (gas).
+L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento e noleggio di libri digiitali tramite l'uso della tecncologia blockchain e ispf con costi variabili per il noleggio.
 
 
 ## Requisiti
@@ -18,12 +18,25 @@ L'utente che vuole fare utilizzo di cryptoteca deve connettersi ad un eventuale 
 Dopo la connessione, diventerano visibili tutti i libri disponibili nel catalogo della blockchain. 
 
 > Nota
-> Sulla blockchain non vengono caricati i file effettivi del libro, ma solo i metadati.
+> Sulla blockchain non vengono caricati i file effettivi del libro, ma solo i metadati, poichè caricare un intero libro richiederebbe costi troppo elevati.
 
 Le possibili operazioni sono:
 
 - Noleggio di un libro.
-- Mettere a disposizione un libro. 
+- Mettere a disposizione un libro.
+
+## Noleggio di un libro
+
+Il noleggio di un libro avviene nelle seguenti fasi: 
+
+1) Scelta del libro da noleggiare dal catalogo globale.
+2) Per il noleggio deve essere pagata una somma di avax alla persona che ha inserito il libro.
+3) Nella sezione "I miei noleggi" si potrà leggere il libro scelto.
+
+## Mettere a disposizione un libro
+
+La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un (ispf)[https://en.wikipedia.org/wiki/ISPF].
+
 
 
 
