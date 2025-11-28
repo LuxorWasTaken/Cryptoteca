@@ -45,7 +45,7 @@ Il noleggio di un libro avviene nelle seguenti fasi:
 La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un [IPFS](https://en.wikipedia.org/wiki/InterPlanetary_File_System) e avviene nel seguente modo: 
 
 1) Cliccare sulla sezione "Carica Nuovo".
-2) Inserimento delle informazioni (In particolare il CID, ossia il codice che permette di identificare un file presente in tutte le ISPF. Il CID lo si ottiene inserendo il file da mettere nella blockchain all'interno del proprio nodo IPFS). 
+2) Inserimento delle informazioni (In particolare il CID, ossia il codice che permette di identificare un file presente in tutte le IPFS. Il CID lo si ottiene inserendo il file da mettere nella blockchain all'interno del proprio nodo IPFS). 
 3) Cliccare "Conferma e paga il gas".
 
 ## SmartContract-Spiegazione
