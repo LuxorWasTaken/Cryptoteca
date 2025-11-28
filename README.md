@@ -35,7 +35,15 @@ Il noleggio di un libro avviene nelle seguenti fasi:
 
 ## Mettere a disposizione un libro
 
-La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un [ISPF](https://en.wikipedia.org/wiki/ISPF). 
+La messa a disposizione di un libro è leggermente più complessa perchè si ha la necessità di utilizzare un [ISPF](https://en.wikipedia.org/wiki/ISPF) e avviene nel seguente modo: 
+
+1) Cliccare sulla sezione "Carica Nuovo".
+2) Inserimento delle informazioni (In particolare il CID, ossia il codice che permette di identificare un file presente in tutte le ISPF).
+3) Cliccare "Conferma e paga il gas".
+
+## Funzionamento dello Smart Contract
+
+Lo smart contract è scrito in solidity e lo si può modificare dal file 
 
 
 
