@@ -43,7 +43,20 @@ La messa a disposizione di un libro è leggermente più complessa perchè si ha 
 
 ## Funzionamento dello Smart Contract
 
-Lo smart contract è scrito in solidity e lo si può modificare dal file 
+Lo smart contract è scrito in solidity e lo si può modificare dal file: "cryptoteca.sol". Di seguito la spiegazione: 
+
+'''
+    struct Book {
+        uint256 id;
+        string title;
+        string author;
+        string ipfsHash;
+        uint256 rentalPrice;
+        address payable uploader;
+        bool exists;    
+        bool isActive;  
+    }
+'''
 
 
 
