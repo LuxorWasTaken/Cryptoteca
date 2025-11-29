@@ -8,6 +8,7 @@ Progetto del team 6 per l'Hackathon di Avalanche
 - [Spiegazione Smart Contract](#SmartContract-Spiegazione)
 - [Problematiche Riscontrate nello Sviluppo](#Problematiche)
 
+
 ## Cryptoteca-Introduzione
 
 L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento e noleggio di libri digitali tramite l'uso della tecncologia blockchain e IPFS con costi variabili per il noleggio.
@@ -26,6 +27,11 @@ Dopo la connessione, diventerano visibili tutti i libri disponibili nel catalogo
 
 > Nota
 > Sulla blockchain non vengono caricati i file effettivi del libro, ma solo i metadati, poichè caricare un intero libro richiederebbe costi troppo elevati.
+
+Per avviare l'applicazione bisogna hostare su un ambiente virtuale che permette di eseguire script di javascript. 
+
+> Nota
+> Per connettere il wallet bisogna usare https. Si può creare un tunnel sicuro tramite l'uso dello strumento [ngrok](https://ngrok.com/)
 
 Le possibili operazioni sono:
 
