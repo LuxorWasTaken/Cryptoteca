@@ -10,7 +10,7 @@ Progetto del team 6 per l'Hackathon di Avalanche
 
 ## Cryptoteca-Introduzione
 
-L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento e noleggio di libri digitali tramite l'uso della tecncologia blockchain e ISPF con costi variabili per il noleggio.
+L'idea di cryptoteca è quella di un sistema decentralizzato per il caricamento e noleggio di libri digitali tramite l'uso della tecncologia blockchain e IPFS con costi variabili per il noleggio.
 
 
 ## Requisiti
